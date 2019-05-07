@@ -1,0 +1,26 @@
+
+Call:
+lm(formula = dat_m$MORTALITY ~ dat_m$PRECIP + dat_m$EDUC + dat_m$NONWHITE + 
+    dat_m$POOR + (nox + nox2) + dat_m$SO2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-102.734  -23.108   -2.776   20.972   83.585 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    972.7274   141.8812   6.856 8.40e-09 ***
+dat_m$PRECIP     2.0584     0.6702   3.071  0.00339 ** 
+dat_m$EDUC     -16.4570     7.5734  -2.173  0.03436 *  
+dat_m$NONWHITE  48.7069    11.0203   4.420 5.05e-05 ***
+dat_m$POOR     -18.3358    34.1909  -0.536  0.59405    
+nox             13.6910     7.2122   1.898  0.06321 .  
+nox2            -5.2629     2.5874  -2.034  0.04706 *  
+dat_m$SO2        5.8666     5.5694   1.053  0.29705    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 35.02 on 52 degrees of freedom
+Multiple R-squared:  0.7207,	Adjusted R-squared:  0.6831 
+F-statistic: 19.17 on 7 and 52 DF,  p-value: 2.207e-12
+

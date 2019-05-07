@@ -1,0 +1,16 @@
+Analysis of Variance Table
+
+Response: dat_m$MORTALITY
+             Df Sum Sq Mean Sq F value    Pr(>F)    
+dat_m$PRECIP  1  59256   59256 52.7021 2.357e-09 ***
+educ          1  20492   20492 18.2261 8.747e-05 ***
+educ2         1   7272    7272  6.4677  0.014126 *  
+nonwhite      1  48956   48956 43.5412 2.549e-08 ***
+nonwhite2     1   2371    2371  2.1089  0.152691    
+dat_m$POOR    1  10286   10286  9.1481  0.003924 ** 
+nox           1  17593   17593 15.6473  0.000241 ***
+nox2          1   5450    5450  4.8474  0.032330 *  
+dat_m$SO2     1    380     380  0.3379  0.563677    
+Residuals    50  56218    1124                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

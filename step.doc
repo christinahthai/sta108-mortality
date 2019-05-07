@@ -1,0 +1,9 @@
+
+Call:
+lm(formula = dat_m$MORTALITY ~ dat_m$PRECIP + educ + educ2 + 
+    nonwhite + nox + nox2)
+
+Coefficients:
+ (Intercept)  dat_m$PRECIP          educ         educ2      nonwhite           nox          nox2  
+     890.620         1.876       -21.621       -16.760        39.319        22.712        -6.233  
+
