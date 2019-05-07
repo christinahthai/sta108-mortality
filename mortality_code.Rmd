@@ -1,0 +1,152 @@
+---
+title: "Sta108-mortality"
+author: "Christina H Thai"
+date: "5/7/2019"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+#Read data
+dat_mortality = read.csv('mortality.csv', header = TRUE)
+dat_m = dat_mortality[,c(7,1,2,3,4,5,6)]
+#Transform NO, SO using  natural log
+dat_m$NOX = log(dat_mortality$NOX)
+dat_m$SO2 = log(dat_mortality$SO2)
+
+#Transform NONWHITE, POOR using cubic root
+dat_m$NONWHITE = (dat_mortality$NONWHITE)^(1/3)
+dat_m$POOR = (dat_mortality$POOR)^(1/3)
+#Visual representation of outliers
+boxplot(dat_mortality[,1:6], main = "Boxplot of Factors")
+boxplot(dat_m[,4:7], main = "Boxplot of Factors (Transformed)")
+#reprint data to remove outliers
+dat_mort = dat_m
+
+#remove outliers
+source("http://goo.gl/UUyEzD")
+outlierKD(dat_mort, POOR)
+library(car)
+#Scatterplot Matrix of Outliers and Outliers Removed
+scatterplotMatrix(dat_m, main = 'Scatterplot Matrix (With Outliers)', cex = 0.01 )
+scatterplotMatrix(dat_mort, main = 'Scatterplot Matrix (Outliers Removed)', cex = 0.01)
+
+boxplot(dat_mort[,3:7], main = "Boxplot of Factors (Outliers Removed)")
+#covariance matrix of data w outliers
+cor(dat_m)
+#[EDUC] quadratic fit
+educ = dat_m$EDUC - mean(dat_m$EDUC)
+educ2 = educ^2
+
+fit_educ2 = lm(dat_m$MORTALITY ~ educ + educ2)
+fit_educ = lm(dat_m$MORTALITY ~ dat_m$EDUC)
+
+ed = qqnorm(fit_educ$res)
+ed2 = qqnorm(fit_educ2$res)
+plot(ed, xlab = "Theoretical Quantiles", 
+     ylab = "Standardized Residuals", 
+     main = "Normal QQ (Linear [EDUC])")
+plot(ed2, xlab = "Theoretical Quantiles", 
+     ylab = "Standardized Residuals", 
+     main = "Normal QQ (Quadratic [EDUC])")
+
+
+
+
+#[NONWHITE] quadratic fit
+nonwhite = dat_m$NONWHITE - mean(dat_m$NONWHITE)
+nonwhite2 = nonwhite^2
+
+fit_nonwhite = lm(dat_m$MORTALITY ~ dat_m$NONWHITE)
+fit_nonwhite2 = lm(dat_m$MORTALITY ~ nonwhite + nonwhite2)
+
+non = qqnorm(fit_nonwhite$res)
+non2 = qqnorm(fit_nonwhite2$res)
+plot(non, xlab = "Theoretical Quantiles", 
+     ylab = "Standardized Residuals", 
+     main = "Normal QQ (Linear [NONWHITE])")
+plot(non2, xlab = "Theoretical Quantiles", 
+     ylab = "Standardized Residuals", 
+     main = "Normal QQ (Quadratic [NONWHITE])")
+
+
+#[NOX] quadratic fit
+nox = dat_m$NOX - mean(dat_m$NOX)
+nox2 = nox^2
+
+fit_nox = lm(dat_m$MORTALITY ~ dat_mort$NOX)
+fit_nox2 = lm(dat_m$MORTALITY ~ nox + nox2)
+
+n = qqnorm(fit_nox$res)
+n2 = qqnorm(fit_nox2$res)
+plot(n, xlab = "Theoretical Quantiles", 
+     ylab = "Standardized Residuals", 
+     main = "Normal QQ (Linear [NOX])")
+plot(n2, xlab = "Theoretical Quantiles", 
+     ylab = "Standardized Residuals", 
+     main = "Normal QQ (Quadratic [NOX])")
+#model for data without outliers
+full_l = lm(MORTALITY ~ ., data = dat_mort)
+
+#model for data with outliers
+full_out = lm(MORTALITY ~ ., data = dat_m)
+
+#model for data with NOX^2
+full_q2 = lm(formula = dat_m$MORTALITY ~ 
+               dat_m$PRECIP + dat_m$EDUC + dat_m$NONWHITE + dat_m$POOR + (nox + nox2) + dat_m$SO2)
+
+
+#model for data with three square terms
+full_q3 = lm(formula = dat_m$MORTALITY ~ 
+               dat_m$PRECIP + (educ + educ2) + 
+               (nonwhite + nonwhite2) + 
+               dat_m$POOR + (nox + nox2) + dat_m$SO2)
+
+capture.output(summary(full_l), file = "summary_l.doc")
+capture.output(summary(full_out), file = "summary_out.doc")
+capture.output(summary(full_q2), file = "summary_q2.doc")
+capture.output(summary(full_q3), file = "summary_q3.doc")
+#Scatternplot of fitted values of linear and polynomial model
+scatterplot(full_out$fitted.values, dat_m$MORTALITY, 
+            xlab = "Actual Observation", ylab = "Fitted Values", 
+            main = "Fitted v. Oberved (Linear)")
+
+scatterplot(full_q3$fitted.values, dat_m$MORTALITY, 
+            xlab = "Actual Observation", ylab = "Fitted Values", 
+            main = "Fitted v. Oberved (Quadratic)")
+#analysis of residuals for linear and polynomial model
+boxplot(full_out$res, xlab = "Residuals",
+        main = "Residuals of Linear Model")
+hist(full_out$res, xlab = "Residuals",
+     main = "Residuals of Linear Model")
+
+boxplot(full_q3$res, xlab = "Residuals", 
+        main = "Residuals of Polynomial Model")
+hist(full_q3$res, xlab = "Residuals", 
+     main = "Residuals of Polynomial Model")
+
+qqnorm(full_out$res, xlab = "Residuals",
+       main = "QQ Plot for Linear Model")
+
+qqnorm(full_q3$res, xlab = "Residuals", 
+       main = "QQ Plot for Polynomial Model")
+#Anova table for quadratic model
+anova(full_q3)
+capture.output(anova(full_q3), file = "anova_q3.doc")
+#Removing predictors with stepwise
+library('leaps')
+library('MASS')
+new_full_q3 = step(full_q3, 
+     scope = ~ dat_m$PRECIP + educ + educ2 + 
+       nonwhite + nonwhite2 + dat_m$POOR + 
+       nox + nox2 + dat_m$SO2, 
+     direction = 'backward')
+capture.output(new_full_q3, file = 'step.doc')
+#improved scatterplot matrix of fitted values and observed 
+scatterplot(new_full_q3$fitted.values, dat_m$MORTALITY, 
+            xlab = "Actual Observation", ylab = "Fitted Values", 
+            main = "Fitted v. Oberved (Predictors Removed)")
+#reviewing models
+summary(full_q3)
+summary(new_full_q3)
+```

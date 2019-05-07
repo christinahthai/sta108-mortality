@@ -1,0 +1,25 @@
+
+Call:
+lm(formula = MORTALITY ~ ., data = dat_mort)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-87.570 -17.963   0.234  14.694  74.420 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 600.6701   145.9485   4.116 0.000155 ***
+PRECIP        2.3915     0.6395   3.740 0.000500 ***
+EDUC         -2.1039     7.1592  -0.294 0.770145    
+NONWHITE     42.2094     9.6259   4.385 6.49e-05 ***
+POOR         50.2032    37.2055   1.349 0.183689    
+NOX          -4.6508     7.5113  -0.619 0.538797    
+SO2          23.6684     6.1418   3.854 0.000352 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 30.06 on 47 degrees of freedom
+  (6 observations deleted due to missingness)
+Multiple R-squared:  0.7518,	Adjusted R-squared:  0.7201 
+F-statistic: 23.72 on 6 and 47 DF,  p-value: 1.092e-12
+
